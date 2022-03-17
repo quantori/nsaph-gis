@@ -24,7 +24,9 @@ class GISDownloader:
         for link in [shape_file_links[1]]:
             shape_file = link.rsplit('/', 1)[1]
             dest = os.path.join(output_dir, shape_file)
-            request.urlretrieve(link, dest)
+
+            if not os.path.exists(dest):
+                request.urlretrieve(link, dest)
 
             with zipfile.ZipFile(dest, 'r') as zip_ref:
                 zip_ref.extractall(output_dir)
