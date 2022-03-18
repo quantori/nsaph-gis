@@ -1,0 +1,7 @@
+geopandas
+numpy
+pandas
+shapely
+rtree
+
+pytest
