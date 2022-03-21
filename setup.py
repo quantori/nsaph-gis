@@ -14,6 +14,8 @@ setup(
     long_description=long_description,
     long_description_content_type="text/markdown",
     packages=find_packages(),
+    include_package_data=True,
+    package_data={'nsaph_gis': ['data/*.csv']},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: Harvard University :: Development",
