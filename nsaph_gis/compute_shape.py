@@ -24,18 +24,18 @@ class StatsCounter:
         affine: rasterio.Affine,
         layer: Iterable
     ) -> Iterable[Record]:
-        all_touched_strategies = [
+        non_all_touched_strategies = [
             RasterizationStrategy.default,
             RasterizationStrategy.combined,
             RasterizationStrategy.downscale,
         ]
-        non_all_touched_strategies = [
+        all_touched_strategies = [
             RasterizationStrategy.all_touched,
             RasterizationStrategy.combined,
         ]
 
         stats = []
-        if strategy in all_touched_strategies:
+        if strategy in non_all_touched_strategies:
             stats.append(
                 zonal_stats(
                     shapefile,
@@ -47,7 +47,7 @@ class StatsCounter:
                     nodata=NO_DATA,
                 )
             )
-        if strategy in non_all_touched_strategies:
+        if strategy in all_touched_strategies:
             stats.append(
                 zonal_stats(
                     shapefile,
