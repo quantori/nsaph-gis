@@ -1,0 +1,8 @@
+geopandas
+numpy
+pandas
+shapely
+rtree
+rasterstats
+
+pytest
