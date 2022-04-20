@@ -3,6 +3,8 @@ import zipfile
 from typing import List, Tuple
 from urllib import request
 
+from tqdm import tqdm
+
 
 class GISDownloader:
     """
@@ -42,7 +44,10 @@ class GISDownloader:
         dest = os.path.join(output_dir, shape_file)
 
         if not os.path.exists(dest):
-            request.urlretrieve(url, dest)
+            with tqdm() as bar:
+                def report(blocknum, bs, size):
+                    bar.update(1)
+                request.urlretrieve(url, dest, reporthook=report)
 
         with zipfile.ZipFile(dest, 'r') as zip_ref:
             zip_ref.extractall(output_dir)

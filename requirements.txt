@@ -4,5 +4,6 @@ pandas
 shapely
 rtree
 rasterstats
+tqdm
 
 pytest
