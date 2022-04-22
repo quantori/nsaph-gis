@@ -3,6 +3,7 @@ from typing import Iterable, Optional
 
 import rasterio
 from rasterstats import zonal_stats
+from tqdm import tqdm
 
 from .constants import RasterizationStrategy
 
@@ -66,7 +67,7 @@ class StatsCounter:
         row = stats[0][0]
         key = cls._determine_key(row)
 
-        for i in range(len(stats[0])):
+        for i in tqdm(range(len(stats[0])), total=len(stats[0])):
             if len(stats) == 2:
                 # Combined strategy
                 mean, prop = cls._combine(key, stats[0][i], stats[1][i])
@@ -79,12 +80,12 @@ class StatsCounter:
 
     @staticmethod
     def _determine_key(row) -> str:
-        if "ZIP" in row['properties']:
-            return "ZIP"
-        elif "ZCTA5CE10" in row['properties']:
-            return "ZCTA5CE10"
-        else:
-            raise ValueError("Unknown shape format, no ZIP neither ZCTA5CE10")
+        candidates = ("ZIP", "ZCTA5CE10", "ZCTA5CE20")
+        for candidate in candidates:
+            if candidate in row['properties']:
+                return candidate
+
+        raise ValueError(f"Unknown shape format, no expected fields '{ candidates }'")
 
     @staticmethod
     def _combine(key, r1, r2) -> Record:
