@@ -5,7 +5,7 @@ with open("README.md", "r") as readme:
 
 setup(
     name='nsaph_gis',
-    version="0.0.1",
+    version="0.0.2",
     url='https://github.com/NSAPH-Data-Platform/nsaph-gis',
     license='',
     author='Quantori LLC',

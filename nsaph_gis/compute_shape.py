@@ -1,11 +1,11 @@
 from dataclasses import dataclass
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Tuple
 
 import rasterio
 from rasterstats import zonal_stats
 from tqdm import tqdm
 
-from .constants import RasterizationStrategy
+from .constants import RasterizationStrategy, Geography
 
 NO_DATA = -999  # I do not know what it is, but not setting it causes a warning
 
@@ -23,7 +23,8 @@ class StatsCounter:
         strategy: RasterizationStrategy,
         shapefile: str,
         affine: rasterio.Affine,
-        layer: Iterable
+        layer: Iterable,
+        geography: Geography
     ) -> Iterable[Record]:
         non_all_touched_strategies = [
             RasterizationStrategy.default,
@@ -65,7 +66,12 @@ class StatsCounter:
             return
 
         row = stats[0][0]
-        key = cls._determine_key(row)
+        if geography == Geography.zip:
+            key = cls._determine_zip_key(row)
+        elif geography == Geography.county:
+            key = cls._determine_county_key(row)
+        else:
+            raise ValueError("Unsupported geography: " + str(geography))
 
         for i in tqdm(range(len(stats[0])), total=len(stats[0])):
             if len(stats) == 2:
@@ -74,23 +80,35 @@ class StatsCounter:
 
             else:
                 mean = stats[0][i]['properties']['mean']
-                prop = stats[0][i]['properties'][key]
+                props = [stats[0][i]['properties'][subkey] for subkey in key]
+                prop = "".join(props)
 
             yield Record(mean=mean, prop=prop)
 
+    @classmethod
+    def _determine_zip_key(cls, row) -> Tuple:
+        candidates = ("ZIP", "ZCTA5", "ZCTA5CE10", "ZCTA5CE20")
+        return tuple(cls._determine_key(row, candidates))
+
+    @classmethod
+    def _determine_county_key(cls, row) -> Tuple:
+        candidates = ["COUNTY", "COUNTYFP"]
+        c = cls._determine_key(row, candidates)
+        s = cls._determine_key(row, ["STATE", "STATEFP"])
+        return (s, c)
+
     @staticmethod
-    def _determine_key(row) -> str:
-        candidates = ("ZIP", "ZCTA5CE10", "ZCTA5CE20")
+    def _determine_key(row, candidates) -> str:
         for candidate in candidates:
             if candidate in row['properties']:
                 return candidate
-
         raise ValueError(f"Unknown shape format, no expected fields '{ candidates }'")
 
     @staticmethod
     def _combine(key, r1, r2) -> Record:
-        prop = r1['properties'][key]
-        assert prop == r2['properties'][key]
+        prop1 = "".join([r1['properties'][subkey] for subkey in key])
+        prop2 = "".join([r2['properties'][subkey] for subkey in key])
+        assert prop1 == prop2
 
         m1 = r1['properties']['mean']
         m2 = r2['properties']['mean']
@@ -102,4 +120,4 @@ class StatsCounter:
             raise AssertionError("m1 && !m2")
         else:
             mean = None
-        return Record(mean=mean, prop=prop)
+        return Record(mean=mean, prop=prop1)
