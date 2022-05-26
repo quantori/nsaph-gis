@@ -1,6 +1,6 @@
 import os
 import zipfile
-from typing import List, Tuple
+from typing import Tuple
 from urllib import request
 
 from tqdm import tqdm
@@ -14,29 +14,28 @@ class GISDownloader:
     COUNTY_TEMPLATE = 'https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_county_500k.zip'
     ZIP_TEMPLATE = 'https://www2.census.gov/geo/tiger/GENZ{year}/shp/cb_{year}_us_zcta510_500k.zip'
 
-    @classmethod
-    def download_shapes(cls, year: int, output_dir: str = None, strict: bool = False) -> None:
-        cls.download_zip(year, output_dir, strict)
-        cls.download_county(year, output_dir, strict)
+    def __init__(self, proxy=None):
+        self.proxy = proxy
 
-    @classmethod
-    def download_zip(cls, year: int, output_dir: str = None, strict: bool = False) -> None:
-        zip_url, is_exact = cls._get_zip_url(year)
+    def download_shapes(self, year: int, output_dir: str = None, strict: bool = False) -> None:
+        self.download_zip(year, output_dir, strict)
+        self.download_county(year, output_dir, strict)
+
+    def download_zip(self, year: int, output_dir: str = None, strict: bool = False) -> None:
+        zip_url, is_exact = self._get_zip_url(year)
         if strict and not is_exact:
             raise ValueError(f'There is no census data for year { year }.')
 
-        cls._download_shape(zip_url, output_dir)
+        self._download_shape(zip_url, output_dir)
 
-    @classmethod
-    def download_county(cls, year: int, output_dir: str = None, strict: bool = False) -> None:
-        county_url, is_exact = cls._get_county_url(year)
+    def download_county(self, year: int, output_dir: str = None, strict: bool = False) -> None:
+        county_url, is_exact = self._get_county_url(year)
         if strict and not is_exact:
             raise ValueError(f'There is no census data for year { year }.')
 
-        cls._download_shape(county_url, output_dir)
+        self._download_shape(county_url, output_dir)
 
-    @classmethod
-    def _download_shape(cls, url: str, output_dir: str = None) -> None:
+    def _download_shape(self, url: str, output_dir: str = None) -> None:
         if output_dir is None:
             output_dir = '.'
 
@@ -44,9 +43,15 @@ class GISDownloader:
         dest = os.path.join(output_dir, shape_file)
 
         if not os.path.exists(dest):
+            if self.proxy:
+                proxy = request.ProxyHandler({'http': self.proxy, 'https': self.proxy})
+                opener = request.build_opener(proxy)
+                request.install_opener(opener)
+
             with tqdm() as bar:
                 def report(blocknum, bs, size):
-                    bar.update(1)
+                    bar.total = size
+                    bar.update(bs)
                 request.urlretrieve(url, dest, reporthook=report)
 
         with zipfile.ZipFile(dest, 'r') as zip_ref:
