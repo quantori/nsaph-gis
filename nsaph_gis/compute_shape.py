@@ -88,14 +88,14 @@ class StatsCounter:
     @classmethod
     def _determine_zip_key(cls, row) -> Tuple:
         candidates = ("ZIP", "ZCTA5", "ZCTA5CE10", "ZCTA5CE20")
-        return tuple(cls._determine_key(row, candidates))
+        return cls._determine_key(row, candidates),
 
     @classmethod
     def _determine_county_key(cls, row) -> Tuple:
         candidates = ["COUNTY", "COUNTYFP"]
         c = cls._determine_key(row, candidates)
         s = cls._determine_key(row, ["STATE", "STATEFP"])
-        return (s, c)
+        return s, c
 
     @staticmethod
     def _determine_key(row, candidates) -> str:
