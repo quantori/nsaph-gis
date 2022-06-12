@@ -8,7 +8,7 @@ setup(
     version="0.0.2",
     url='https://github.com/NSAPH-Data-Platform/nsaph-gis',
     license='',
-    author='Quantori LLC',
+    author='Harvard University and Quantori LLC',
     author_email='info@quantori.com',
     description='GIS tools used by NSAPH pipelines and projects',
     long_description=long_description,
