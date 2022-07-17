@@ -1,7 +1,9 @@
 .. Gis documentation
 
-Welcome to GIS Toolkit's documentation!
+Welcome to NSAPH GIS Toolkit's documentation!
 =======================================
+
+`Documentation Home <../home.html>`_
 
 .. toctree::
    :maxdepth: 2
