@@ -12,10 +12,9 @@
 #
 import os
 import sys
-from nsaph_utils.docutils.codeurl import URLDomain
-import sphinx
 
-sys.path.insert(0, os.path.abspath('src/python'))
+sys.path.insert(0, os.path.abspath('../'))
+
 add_module_names = False
 autoclass_content = 'both'
 autodoc_member_order = 'bysource'
@@ -44,10 +43,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx_paramlinks',
     'sphinx.ext.autosectionlabel',
-    'nsaph_utils.docutils.recommonmark',
-    'sphinx_markdown_tables',
-    'sphinx_sql.sphinx_sql',
-    'nsaph_utils.docutils.cwl_parser',
+    'myst_parser',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -66,19 +62,3 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.nsaph', 'notes']
 #
 #html_theme = 'alabaster'
 html_theme = "sphinx_rtd_theme"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
-
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'restructuredtext',
-    '.cwl': 'cwl',
-}
-
-
-def setup(app):
-    app.add_domain(URLDomain)
