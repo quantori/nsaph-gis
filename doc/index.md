@@ -20,7 +20,7 @@ This library contains several packages, aimed to work with census shape files.
 
 
 
-# Indices and tables
+## Indices and tables
 
 * [](genindex)
 * [](modindex)
