@@ -9,7 +9,7 @@ hidden:
 python_components
 ```
 
-## Overview {#gis-overview}
+## GIS Library Overview 
 
 This library contains several packages, aimed to work with census shape files.
 
@@ -20,7 +20,3 @@ This library contains several packages, aimed to work with census shape files.
 
 
 
-## Indices {#gis-indices}
-
-* [](genindex)
-* [](modindex)
