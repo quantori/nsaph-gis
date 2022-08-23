@@ -1,4 +1,4 @@
-name: Push changes to nspah-platform-docs
+name: Push changes to nsaph-platform-docs
 on:
   push:
     branches:
